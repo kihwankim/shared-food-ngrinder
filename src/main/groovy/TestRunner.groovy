@@ -1,17 +1,19 @@
+import static net.grinder.script.Grinder.grinder
+import static org.junit.Assert.*
+import static org.hamcrest.Matchers.*
 import net.grinder.script.GTest
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+
+// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+
 import org.ngrinder.http.HTTPRequest
 import org.ngrinder.http.HTTPRequestControl
 import org.ngrinder.http.HTTPResponse
-
-import static net.grinder.script.Grinder.grinder
-
-// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
 
 @RunWith(GrinderRunner)
 class TestRunner {
@@ -52,7 +54,7 @@ class TestRunner {
     public void test() {
         HTTPResponse response = request.GET("http://${BASE_URL}/api/v1/flavors")
 
-        if (response.statusCode == 302) {
+        if (response.statusCode != 200) {
             grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", response.statusCode)
         } else {
             print(response.statusCode)
