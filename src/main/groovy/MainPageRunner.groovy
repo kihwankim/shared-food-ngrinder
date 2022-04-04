@@ -1,21 +1,24 @@
 import HTTPClient.NVPair
-import net.grinder.script.GTest
-import net.grinder.scriptengine.groovy.junit.GrinderRunner
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.ngrinder.http.HTTPRequest
-import org.ngrinder.http.HTTPRequestControl
-import org.ngrinder.http.HTTPResponse
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import static net.grinder.script.Grinder.grinder
-import static org.hamcrest.Matchers.is
-import static org.junit.Assert.assertThat
+import static org.junit.Assert.*
+import static org.hamcrest.Matchers.*
+import net.grinder.script.GTest
+import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+
+// import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.ngrinder.http.HTTPRequest
+import org.ngrinder.http.HTTPRequestControl
+import org.ngrinder.http.HTTPResponse
 
 // import static net.grinder.util.GrinderUtils.* // You can use this if you're using nGrinder after 3.2.3
 
@@ -118,6 +121,7 @@ class MainPageRunner {
     }
 
     void checkStatusCode(def statusCode) {
-        assertThat(((int) statusCode / 100), is(2))
+        assertThat( statusCode, greaterThanOrEqualTo(200))
+        assertThat( statusCode, lessThan(300))
     }
 }
