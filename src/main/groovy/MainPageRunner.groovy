@@ -1,3 +1,4 @@
+import HTTPClient.NVPair
 import net.grinder.script.GTest
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
@@ -8,6 +9,9 @@ import org.junit.runner.RunWith
 import org.ngrinder.http.HTTPRequest
 import org.ngrinder.http.HTTPRequestControl
 import org.ngrinder.http.HTTPResponse
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 import static net.grinder.script.Grinder.grinder
 import static org.hamcrest.Matchers.is
@@ -57,11 +61,12 @@ class MainPageRunner {
 
     @Test
     public void test() {
-        saveFood()
-
+        def saveFoodId = saveFood()
+        findValue(saveFoodId)
+        searchPage()
     }
 
-    public void saveFood() {
+    public String saveFood() {
         def tags = []
         random.nextInt(5).times {
             tags.add([
@@ -84,9 +89,35 @@ class MainPageRunner {
         HTTPResponse response = request.POST("http://${BASE_URL}/api/v1/foods", requestBody)
 
         checkStatusCode(response.statusCode)
+
+        return response.getHeader("location").getValue()
+    }
+
+    public void findValue(def location) {
+        HTTPResponse response = request.GET(location)
+
+        checkStatusCode(response.statusCode)
+    }
+
+    public void searchPage() {
+        def tag = []
+        def flavors = []
+        def pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        println(LocalDateTime.now().format(pattern))
+        NVPair[] param = [
+                new NVPair("categoryName", CATEGORIES[random.nextInt(CATEGORIES.length - 1)]),
+                new NVPair("offset", Integer.toString(random.nextInt(1000))),
+                new NVPair("pageSize", Integer.toString(10)),
+                new NVPair("firstSearchTime", LocalDateTime.now().format(pattern)),
+                new NVPair("tags", tag.join(",")),
+                new NVPair("flavors", flavors.join(","))
+        ]
+        HTTPResponse response = request.GET("http://${BASE_URL}/api/v1/foods", param)
+
+        checkStatusCode(response.statusCode)
     }
 
     void checkStatusCode(def statusCode) {
-        assertThat(statusCode % 100, is(2))
+        assertThat(((int) statusCode / 100), is(2))
     }
 }
